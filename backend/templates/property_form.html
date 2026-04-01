@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{% if editing %}Edit{% else %}New{% endif %} Property | NexusRealEstate{% endblock %}
+{% block page_title %}{% if editing %}Edit Property{% else %}New Property{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:750px">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ record.title|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Property Type</label>
+        <select name="property_type">
+          <option value="apartment" {% if record.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
+          <option value="villa" {% if record.property_type == 'villa' %}selected{% endif %}>Villa</option>
+          <option value="plot" {% if record.property_type == 'plot' %}selected{% endif %}>Plot</option>
+          <option value="commercial" {% if record.property_type == 'commercial' %}selected{% endif %}>Commercial</option>
+          <option value="office" {% if record.property_type == 'office' %}selected{% endif %}>Office</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" name="location" value="{{ record.location|default:'' }}">
+      </div>
+      <div class="form-group">
+        <label>Area Sqft</label>
+        <input type="number" name="area_sqft" value="{{ record.area_sqft|default:'0' }}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" step="0.01" name="price" value="{{ record.price|default:'0' }}">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status">
+          <option value="available" {% if record.status == 'available' %}selected{% endif %}>Available</option>
+          <option value="sold" {% if record.status == 'sold' %}selected{% endif %}>Sold</option>
+          <option value="rented" {% if record.status == 'rented' %}selected{% endif %}>Rented</option>
+          <option value="under_construction" {% if record.status == 'under_construction' %}selected{% endif %}>Under Construction</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Bedrooms</label>
+        <input type="number" name="bedrooms" value="{{ record.bedrooms|default:'0' }}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="description">{{ record.description|default:'' }}</textarea>
+    </div>
+
+    <div style="display:flex;gap:0.75rem;margin-top:1rem">
+      <button type="submit" class="btn btn-primary">{% if editing %}Update{% else %}Create{% endif %} Property</button>
+      <a href="/properties/" class="btn" style="background:var(--border);color:var(--text)">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
