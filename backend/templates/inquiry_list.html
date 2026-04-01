@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Inquiries | NexusRealEstate{% endblock %}
+{% block page_title %}Inquiries{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search inquiries...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Inquiry Type</option>
+      <option value="buy" {% if status_filter == 'buy' %}selected{% endif %}>Buy</option>
+      <option value="rent" {% if status_filter == 'rent' %}selected{% endif %}>Rent</option>
+      <option value="invest" {% if status_filter == 'invest' %}selected{% endif %}>Invest</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/inquiries/create/" class="btn btn-primary">+ New Inquiry</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Client Name</th><th>Client Phone</th><th>Client Email</th><th>Property Title</th><th>Inquiry Type</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/inquiries/{{ r.pk }}/edit/"><strong>{{ r.client_name }}</strong></a></td>
+        <td>{{ r.client_phone|default:"-" }}</td>
+        <td style="color:var(--muted)">{{ r.client_email|default:"-" }}</td>
+        <td>{{ r.property_title|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_inquiry_type_display }}</span></td>
+        <td class="actions">
+          <a href="/inquiries/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/inquiries/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No inquiries found.</p>
+    <a href="/inquiries/create/" class="btn btn-primary" style="margin-top:1rem">Create Inquiry</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
