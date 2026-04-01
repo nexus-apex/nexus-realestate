@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Showings | NexusRealEstate{% endblock %}
+{% block page_title %}Showings{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search showings...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="scheduled" {% if status_filter == 'scheduled' %}selected{% endif %}>Scheduled</option>
+      <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+      <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+      <option value="no_show" {% if status_filter == 'no_show' %}selected{% endif %}>No Show</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/showings/create/" class="btn btn-primary">+ New Showing</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Property Title</th><th>Client Name</th><th>Agent</th><th>Date</th><th>Time Slot</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/showings/{{ r.pk }}/edit/"><strong>{{ r.property_title }}</strong></a></td>
+        <td>{{ r.client_name|default:"-" }}</td>
+        <td>{{ r.agent|default:"-" }}</td>
+        <td style="color:var(--muted)">{{ r.date|date:"M d, Y"|default:"-" }}</td>
+        <td>{{ r.time_slot|default:"-" }}</td>
+        <td class="actions">
+          <a href="/showings/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/showings/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No showings found.</p>
+    <a href="/showings/create/" class="btn btn-primary" style="margin-top:1rem">Create Showing</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
