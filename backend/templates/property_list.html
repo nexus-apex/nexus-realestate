@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Properties | NexusRealEstate{% endblock %}
+{% block page_title %}Properties{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search properties...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Property Type</option>
+      <option value="apartment" {% if status_filter == 'apartment' %}selected{% endif %}>Apartment</option>
+      <option value="villa" {% if status_filter == 'villa' %}selected{% endif %}>Villa</option>
+      <option value="plot" {% if status_filter == 'plot' %}selected{% endif %}>Plot</option>
+      <option value="commercial" {% if status_filter == 'commercial' %}selected{% endif %}>Commercial</option>
+      <option value="office" {% if status_filter == 'office' %}selected{% endif %}>Office</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/properties/create/" class="btn btn-primary">+ New Property</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Property Type</th><th>Location</th><th>Area Sqft</th><th>Price</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/properties/{{ r.pk }}/edit/"><strong>{{ r.title }}</strong></a></td>
+        <td><span class="badge badge-blue">{{ r.get_property_type_display }}</span></td>
+        <td>{{ r.location|default:"-" }}</td>
+        <td>{{ r.area_sqft|default:"-" }}</td>
+        <td>{{ r.price|floatformat:2 }}</td>
+        <td class="actions">
+          <a href="/properties/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/properties/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No properties found.</p>
+    <a href="/properties/create/" class="btn btn-primary" style="margin-top:1rem">Create Property</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
